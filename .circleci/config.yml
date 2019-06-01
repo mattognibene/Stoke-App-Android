@@ -1,0 +1,662 @@
+version: 2.0
+
+defaults: &defaults
+  docker:
+    - image: circleci/android:api-28-alpha
+  working_directory: ~/stoke-android
+  environment:
+    _JAVA_OPTIONS: "-Xmx1400m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
+    TERM: dumb
+
+cache_key: &cache_key
+  key: jars-{{ checksum "build.gradle" }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+
+update_sdk: &update_sdk
+  name: Update SDK
+  command: |
+    mkdir "$ANDROID_HOME/licenses" || true
+    echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > "$ANDROID_HOME/licenses/android-sdk-license"
+    echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+    sdkmanager "platform-tools" "platforms;android-28"
+
+download_dependencies: &download_dependencies
+  name: Download Dependencies
+  command: ./gradlew dependencies --no-daemon
+
+run_develop_tests: &run_develop_tests
+  name: Run Tests
+  command: ./gradlew testDevelopReleaseUnitTest testReleaseUnitTest common:test domain:test --no-daemon
+
+run_sprint_tests: &run_sprint_tests
+  name: Run Tests
+  command: ./gradlew testSprintReleaseUnitTest testReleaseUnitTest common:test domain:test --no-daemon
+
+run_prod_tests: &run_prod_tests
+  name: Run Tests
+  command: ./gradlew testProductionReleaseUnitTest testReleaseUnitTest common:test domain:test --no-daemon
+
+copy_test_results: &copy_test_results
+  name: Copy Test Results
+  command: |
+    mkdir -p ./test-results/
+    find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ./test-results/ \;
+
+run_develop_lint: &run_develop_lint
+  name: Run Lint
+  command: ./gradlew app:lintDevelopRelease --no-daemon
+
+run_sprint_lint: &run_sprint_lint
+  name: Run Lint
+  command: ./gradlew app:lintSprintRelease --no-daemon
+
+run_prod_lint: &run_prod_lint
+  name: Run Lint
+  command: ./gradlew app:lintProductionRelease --no-daemon
+
+run_develop_styling: &run_develop_styling
+  name: Checkstyle
+  command: ./gradlew ktlintDevelopReleaseCheck domain:ktlintCheck --no-daemon
+
+run_sprint_styling: &run_sprint_styling
+  name: Checkstyle
+  command: ./gradlew ktlintSprintReleaseCheck domain:ktlintCheck --no-daemon
+
+run_prod_styling: &run_prod_styling
+  name: Checkstyle
+  command: ./gradlew ktlintProdutionReleaseCheck domain:ktlintCheck --no-daemon
+
+report_artifacts: &report_artifacts
+  path: reports
+  destination: reports
+
+app_artifacts: &app_artifacts
+  path: app/build/reports
+  destination: reports/app
+
+cache_artifacts: &cache_artifacts
+  path: cache/build/reports
+  destination: reports/cache
+
+data_artifacts: &data_artifacts
+  path: data/build/reports
+  destination: reports/data
+
+device_artifacts: &device_artifacts
+  path: device/build/reports
+  destination: reports/device
+
+domain_artifacts: &domain_artifacts
+  path: domain/build/reports
+  destination: reports/domain
+
+remote_artifacts: &remote_artifacts
+  path: remote/build/reports
+  destination: reports/remote
+
+apk_artifacts: &apk_artifacts
+  path: app/build/outputs/apk
+  destination: apk
+
+jobs:
+  test_develop:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run:
+          <<: *download_dependencies
+
+      - run:
+          <<: *run_develop_tests
+
+      - run:
+          <<: *copy_test_results
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *report_artifacts
+
+      - store_test_results:
+          path: test-results
+
+  test_sprint:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run:
+          <<: *download_dependencies
+
+      - run:
+          <<: *run_sprint_tests
+
+      - run:
+          <<: *copy_test_results
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *report_artifacts
+
+      - store_test_results:
+          path: test-results
+
+  test_prod:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run:
+          <<: *download_dependencies
+
+      - run:
+          <<: *run_prod_tests
+
+      - run:
+          <<: *copy_test_results
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *report_artifacts
+
+      - store_test_results:
+          path: test-results
+
+  checkstyle_develop:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run: bundle install
+
+      - run:
+          <<: *download_dependencies
+
+      - run:
+          <<: *run_develop_styling
+
+      - run:
+          name: Merge the ktlint reports
+          command: python report-merger.py
+
+      - run:
+          name: Run Danger for ktlint on develop
+          command: bundle exec danger --dangerfile=Dangerfile-ktlint --fail-on-errors=true
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *app_artifacts
+
+      - store_artifacts:
+          <<: *cache_artifacts
+
+      - store_artifacts:
+          <<: *data_artifacts
+
+      - store_artifacts:
+          <<: *device_artifacts
+
+      - store_artifacts:
+          <<: *domain_artifacts
+
+      - store_artifacts:
+          <<: *remote_artifacts
+
+  checkstyle_sprint:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run: bundle install
+
+      - run:
+          <<: *download_dependencies
+
+      - run:
+          <<: *run_sprint_styling
+
+      - run:
+          name: Merge the ktlint reports
+          command: python report-merger.py
+
+      - run:
+          name: Run Danger for ktlint on sprint
+          command: bundle exec danger --dangerfile=Dangerfile-ktlint --fail-on-errors=true
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *app_artifacts
+
+      - store_artifacts:
+          <<: *cache_artifacts
+
+      - store_artifacts:
+          <<: *data_artifacts
+
+      - store_artifacts:
+          <<: *device_artifacts
+
+      - store_artifacts:
+          <<: *domain_artifacts
+
+      - store_artifacts:
+          <<: *remote_artifacts
+
+  checkstyle_prod:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run: bundle install
+
+      - run:
+          <<: *download_dependencies
+
+      - run:
+          <<: *run_prod_styling
+
+      - run:
+          name: Merge the ktlint reports
+          command: python report-merger.py
+
+      - run:
+          name: Run Danger for ktlint on prod
+          command: bundle exec danger --dangerfile=Dangerfile-ktlint --fail-on-errors=true
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *app_artifacts
+
+      - store_artifacts:
+          <<: *cache_artifacts
+
+      - store_artifacts:
+          <<: *data_artifacts
+
+      - store_artifacts:
+          <<: *device_artifacts
+
+      - store_artifacts:
+          <<: *domain_artifacts
+
+      - store_artifacts:
+          <<: *remote_artifacts
+
+  lint_develop:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run: bundle install
+
+      - run:
+          <<: *download_dependencies
+
+      - run:
+          <<: *run_develop_lint
+
+      - run:
+          name: Run Danger for Android Lint on develop
+          command: bundle exec danger --dangerfile=Dangerfile-lint --fail-on-errors=true
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *app_artifacts
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .gradle
+            - build
+            - app/build
+
+  lint_sprint:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run: bundle install
+
+      - run:
+          <<: *download_dependencies
+
+      - run:
+          <<: *run_sprint_lint
+
+      - run:
+          name: Run Danger for Android Lint on sprint
+          command: bundle exec danger --dangerfile=Dangerfile-lint --fail-on-errors=true
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *app_artifacts
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .gradle
+            - build
+            - app/build
+
+  lint_prod:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run: bundle install
+
+      - run:
+          <<: *download_dependencies
+
+      - run:
+          <<: *run_prod_lint
+
+      - run:
+          name: Run Danger for Android Lint on prod
+          command: bundle exec danger --dangerfile=Dangerfile-lint --fail-on-errors=true
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *app_artifacts
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .gradle
+            - build
+            - app/build
+
+  deploy_develop:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - attach_workspace:
+          at: ~/stoke-android
+
+      - run:
+          name: Deploy to develop track on HockeyApp
+          command: ./gradlew app:uploadDevelopReleaseToHockeyApp --info --no-daemon
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *apk_artifacts
+
+  deploy_sprint:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - attach_workspace:
+          at: ~/stoke-android
+
+      - run:
+          name: Deploy to sprint track on HockeyApp
+          command: ./gradlew app:uploadSprintReleaseToHockeyApp --info --no-daemon
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *apk_artifacts
+
+  deploy_prod:
+    <<: *defaults
+    steps:
+      - run:
+          <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - attach_workspace:
+          at: ~/stoke-android
+
+      - run:
+          name: Deploy to beta track on HockeyApp
+          command: ./gradlew app:uploadProductionReleaseToHockeyApp --info --no-daemon
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+      - store_artifacts:
+          <<: *apk_artifacts
+
+  dependency_checks:
+    <<: *defaults
+    steps:
+      - run:
+        <<: *update_sdk
+
+      - checkout
+
+      - restore_cache:
+          <<: *cache_key
+
+      - run: bundle install
+
+      - run:
+          <<: *download_dependencies
+
+      - run:
+          name: Check project dependency versions
+          command: ./gradlew dependencyUpdates --no-daemon
+
+      - run:
+          name: Run Danger for dependency version checks
+          command: bundle exec danger --dangerfile=Dangerfile-dependencies --fail-on-errors=true
+
+      - save_cache:
+          <<: *cache_key
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - dependency_checks:
+          filters:
+            tags:
+              only: /.*/
+      - lint_develop:
+          filters:
+            tags:
+              only: /.*/
+      - lint_sprint:
+          filters:
+            tags:
+              only: /sprint-.*/
+            branches:
+              ignore: /.*/
+      - lint_prod:
+          filters:
+            tags:
+              only: /release-.*/
+            branches:
+              ignore: /.*/
+      - checkstyle_develop:
+          filters:
+            tags:
+              only: /.*/
+      - checkstyle_sprint:
+          filters:
+            tags:
+              only: /sprint-.*/
+            branches:
+              ignore: /.*/
+      - checkstyle_prod:
+          filters:
+            tags:
+              only: /release-.*/
+            branches:
+              ignore: /.*/
+      - test_develop:
+          filters:
+            tags:
+              only: /.*/
+      - test_sprint:
+          filters:
+            tags:
+              only: /sprint-.*/
+            branches:
+              ignore: /.*/
+      - test_prod:
+          filters:
+            tags:
+              only: /release-.*/
+            branches:
+              ignore: /.*/
+      - deploy_develop:
+          requires:
+            - checkstyle_develop
+            - lint_develop
+            - test_develop
+            - dependency_checks
+          filters:
+            branches:
+              only: develop
+      - deploy_sprint:
+          requires:
+            - checkstyle_sprint
+            - lint_sprint
+            - test_sprint
+          filters:
+            tags:
+              only: /sprint-.*/
+            branches:
+              ignore: /.*/
+      - deploy_prod:
+          requires:
+            - checkstyle_prod
+            - lint_prod
+            - test_prod
+          filters:
+            tags:
+              only: /release-.*/
+            branches:
+              ignore: /.*/

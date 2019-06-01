@@ -1,0 +1,118 @@
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.FeaturePlugin
+import com.android.build.gradle.LibraryPlugin
+
+apply from: "${project.rootDir}/gradle/dependencies.gradle"
+apply plugin: "com.github.ben-manes.versions"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+    }
+    
+    // Show all compile time errors
+    // See: https://movieos.org/2017/android-room-data-binding-compile-time-errors/
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xmaxerrs" << "4000"
+            options.compilerArgs << "-Xmaxwarns" << "4000"
+        }
+    }
+
+    // Improve the build performance of Dagger by
+    // 1. Not formatting the generated source code
+    // 2. Turning on incremental compilation
+    afterEvaluate {
+        extensions.findByName("kapt")?.arguments {
+            arg("dagger.formatGeneratedSource", "disabled")
+            arg("dagger.gradle.incremental", "enabled")
+        }
+    }
+}
+
+static void applyAndroidPlugins(Project project) {
+    project.apply plugin: 'kotlin-android'
+    project.apply plugin: 'kotlin-kapt'
+    project.apply from: "$project.rootDir/gradle/quality.gradle"
+}
+
+subprojects { subProject ->
+    // The actual app modules
+    plugins.withType(AppPlugin) {
+        applyAndroidPlugins(subProject)
+    }
+
+    // Any Android library modules
+    plugins.withType(LibraryPlugin) {
+        applyAndroidPlugins(subProject)
+    }
+
+    // Any Instant App modules
+    plugins.withType(FeaturePlugin) {
+        applyAndroidPlugins(subProject)
+    }
+
+    subProject.apply plugin: "org.jlleitschuh.gradle.ktlint"
+    subProject.ktlint {
+        version = versions.ktlint
+        android = true
+        outputToConsole = true
+        reporters = ["CHECKSTYLE", "JSON"]
+        ignoreFailures = isCiBuild
+        verbose = true
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { details ->
+                // Force all of the Kotlin libraries to use the same version
+                if (details.requested.group == 'org.jetbrains.kotlin') {
+                    details.useVersion versions.kotlin
+                }
+            }
+        }
+    }
+}
+
+buildscript {
+    apply from: "${project.rootDir}/gradle/dependencies.gradle"
+
+    ext.isCiBuild = System.getenv("CI") == 'true'
+
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
+        maven { url "https://plugins.gradle.org/m2/" }
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+        classpath 'de.felixschulze.gradle:gradle-hockeyapp-plugin:3.6'
+        classpath "gradle.plugin.org.jlleitschuh.gradle:ktlint-gradle:5.1.0"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.20.0"
+    }
+    
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { details ->
+                // Force all of the Kotlin libraries to use the same version
+                if (details.requested.group == 'org.jetbrains.kotlin') {
+                    details.useVersion versions.kotlin
+                }
+            }
+        }
+    }
+}
+
+def propOrEmpty(String name) {
+    return hasProperty(name) ? getProperty(name) : ''
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

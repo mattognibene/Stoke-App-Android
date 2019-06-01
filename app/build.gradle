@@ -1,0 +1,132 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android.extensions'
+apply from: "$rootDir/gradle/coverage.gradle"
+
+if (isCiBuild) {
+    apply from: "${project.rootDir}/gradle/deploy.gradle"
+}
+
+android {
+    compileSdkVersion buildConfig.compileSdk
+    buildToolsVersion buildConfig.buildTools
+
+    defaultConfig {
+        applicationId "com.stokeapp.stoke"
+        testApplicationId "com.stokeapp.stoke.test"
+        minSdkVersion buildConfig.minSdk
+        targetSdkVersion buildConfig.targetSdk
+        versionCode buildConfig.code
+        versionName buildConfig.name
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            testCoverageEnabled true
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    signingConfigs {
+        develop {
+            storeFile file("${project.rootDir}/keystores/stokeDevelop.jks")
+            storePassword propOrEmpty('STORE_PASSWORD')
+            keyAlias 'stokeDevelop'
+            keyPassword propOrEmpty('KEY_PASSWORD')
+        }
+
+        sprint {
+            storeFile file("${project.rootDir}/keystores/stokeSprint.jks")
+            storePassword propOrEmpty('STORE_PASSWORD')
+            keyAlias 'stokeSprint'
+            keyPassword propOrEmpty('KEY_PASSWORD')
+        }
+        
+        production {
+            storeFile file('${project.rootDir}/keystores/stokeProduction.jks')
+            storePassword propOrEmpty('STORE_PASSWORD')
+            keyAlias 'stokeProduction'
+            keyPassword propOrEmpty('KEY_PASSWORD')
+        }
+    }
+
+    flavorDimensions "track"
+
+    productFlavors {
+        develop {
+            dimension "track"
+            applicationIdSuffix ".develop"
+            signingConfig signingConfigs.develop
+        }
+        sprint {
+            dimension "track"
+            applicationIdSuffix ".sprint"
+            signingConfig signingConfigs.sprint
+        }
+        production {
+            dimension "track"
+            signingConfig signingConfigs.production
+        }
+    }
+
+    sourceSets {
+
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        checkDependencies true
+    }
+
+    testOptions {
+        reportDir "$rootDir/reports/app"
+    }
+
+    configurations.all {
+        resolutionStrategy.force libs.moshi
+    }
+}
+
+dependencies {
+    androidTestImplementation libs.android.test.espresso.core
+    androidTestImplementation libs.android.test.espresso.contrib
+    androidTestImplementation libs.android.test.rules
+    androidTestImplementation libs.android.test.runner
+    androidTestImplementation "androidx.test.ext:junit:1.1.0"
+
+    implementation project(':common')
+    implementation project(':domain')
+    implementation project(':data')
+    implementation project(':device')
+    lintChecks project(':lint')
+
+    implementation libs.kotlin.stdlib
+    implementation libs.android.x.coreKtx
+    implementation libs.android.x.annotations
+    implementation libs.android.x.design
+    implementation libs.android.x.constraintLayout
+
+    implementation libs.dagger.runtime
+    kapt libs.dagger.compiler
+    implementation libs.dagger.android.support
+    kapt libs.dagger.android.processor
+
+    implementation libs.rx.android
+    implementation libs.rx.java
+    implementation libs.rx.relay
+
+    implementation libs.autodispose
+
+    implementation libs.timber
+
+    testImplementation libs.android.test.ext.junit
+    testImplementation libs.android.test.ext.truth
+}
