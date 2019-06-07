@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">common_android</string>
+    <string name="retry">Retry</string>
+</resources>

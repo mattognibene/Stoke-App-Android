@@ -1,4 +1,4 @@
-package com.stokeapp.stoke;
+package com.stokeapp.stoke
 
 import android.os.StrictMode
 

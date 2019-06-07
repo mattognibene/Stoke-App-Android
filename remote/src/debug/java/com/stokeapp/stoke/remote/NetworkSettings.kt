@@ -1,4 +1,4 @@
-package com.stokeapp.stoke.remote;
+package com.stokeapp.stoke.remote
 
 import dagger.Module
 import dagger.Provides

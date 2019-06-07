@@ -1,4 +1,4 @@
-package com.stokeapp.stoke.cache.room;
+package com.stokeapp.stoke.cache.room
 
 import android.app.Application
 import androidx.room.Room

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">stoke</string>
+    <string name="stoke_score">Stoke Score</string>
+    <string name="temperature_1s">Temperature: %1$s</string>
 </resources>
