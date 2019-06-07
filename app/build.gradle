@@ -103,6 +103,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:1.1.0"
 
     implementation project(':common')
+    implementation project(':common-android')
     implementation project(':domain')
     implementation project(':data')
     implementation project(':device')
@@ -123,10 +124,13 @@ dependencies {
     implementation libs.rx.java
     implementation libs.rx.relay
 
-    implementation libs.autodispose
+    implementation libs.autodispose.base.ktx
+    implementation libs.autodispose.android.arch.ktx
+
 
     implementation libs.timber
 
     testImplementation libs.android.test.ext.junit
     testImplementation libs.android.test.ext.truth
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
 }

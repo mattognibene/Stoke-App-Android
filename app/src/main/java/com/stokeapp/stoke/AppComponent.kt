@@ -1,6 +1,7 @@
 package com.stokeapp.stoke
 
 import android.app.Application
+import com.stokeapp.stoke.dashboard.AppBindings
 import com.stokeapp.stoke.data.injection.DataModule
 import dagger.BindsInstance
 import dagger.Component
@@ -12,9 +13,11 @@ import javax.inject.Singleton
 @Component(modules = [
     AndroidSupportInjectionModule::class,
     BuildTypeModule::class,
-    DataModule::class
+    DataModule::class,
+    AppBindings::class,
+    ViewModelBindings::class
 ])
-interface AppComponent : AndroidInjector<stokeApp> {
+interface AppComponent : AndroidInjector<StokeApp> {
     @Component.Builder
     interface Builder {
         @BindsInstance fun app(app: Application): Builder

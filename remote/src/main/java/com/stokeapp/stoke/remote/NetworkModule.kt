@@ -15,16 +15,13 @@ import timber.log.Timber
 
 @Module(includes = [NetworkSettings::class])
 object NetworkModule {
-    @Provides
-    @JvmStatic
-    fun providesBaseUrl(): HttpUrl? {
-        return HttpUrl.parse("TODO: Please provide an appropriate base URL!")
-    }
 
     @Provides
     @Singleton
     @JvmStatic
-    fun providesRetrofit(url: HttpUrl?, level: HttpLoggingInterceptor.Level): Retrofit {
+    fun providesRetrofit(
+        level: HttpLoggingInterceptor.Level
+    ): Retrofit.Builder {
         val logging = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").v(message) }
             .apply { this.level = level }
 
@@ -37,10 +34,19 @@ object NetworkModule {
                 .build()
 
         return Retrofit.Builder()
-            .baseUrl(requireNotNull(url))
             .client(client)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
+    }
+
+    @Provides
+    @JvmStatic
+    fun providesOpenWeatherApi(
+        builder: Retrofit.Builder
+    ): OpenWeatherApi {
+        val url = requireNotNull(HttpUrl.parse("https:/api.openweathermap.org/data/2.5/"))
+        return builder.baseUrl(url)
+                .build()
+                .create(OpenWeatherApi::class.java)
     }
 }

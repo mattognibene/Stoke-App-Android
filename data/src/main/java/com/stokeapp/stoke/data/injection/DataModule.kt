@@ -1,8 +1,8 @@
-package com.stokeapp.stoke.data.injection;
+package com.stokeapp.stoke.data.injection
 
-import com.stokeapp.stoke.cache.room.DatabaseModule;
-import com.stokeapp.stoke.domain.executors.AppExecutors;
-import com.stokeapp.stoke.remote.NetworkModule;
+import com.stokeapp.stoke.cache.room.DatabaseModule
+import com.stokeapp.stoke.domain.executors.AppExecutors
+import com.stokeapp.stoke.remote.NetworkModule
 
 import java.util.concurrent.Executors
 
@@ -12,7 +12,7 @@ import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-@Module(includes = [DatabaseModule::class, NetworkModule::class])
+@Module(includes = [DatabaseModule::class, NetworkModule::class, DataBindings::class])
 object DataModule {
     @Provides
     @JvmStatic
