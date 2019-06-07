@@ -30,7 +30,10 @@ class MainActivity : BaseActivity(), Consumer<State> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .autoDisposable(lifecycle.scope())
                 .subscribe(this)
+    }
 
+    override fun onResume() {
+        super.onResume()
         actions.accept(Action.GetTemperature("London"))
     }
 
