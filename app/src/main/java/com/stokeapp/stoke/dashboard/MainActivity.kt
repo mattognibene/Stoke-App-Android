@@ -40,7 +40,7 @@ class MainActivity : BaseActivity(), Consumer<State> {
 
     override fun onResume() {
         super.onResume()
-        actions.accept(Action.GetWeatherData("4500546"))
+        actions.accept(Action.GetWeatherData("4500546")) // TODO allow
     }
 
     override fun accept(state: State) {
@@ -51,9 +51,21 @@ class MainActivity : BaseActivity(), Consumer<State> {
     }
 
     private fun showData(data: WeatherDataModel) {
-        val fahrenheit = TemperatureConverter.kelvinToFarenheit(data.tempInKelvin)
-        temperatureText.text = getString(R.string.temperature_1s, fahrenheit.toString())
-        ScoreGenerator.tempInF = fahrenheit
+        showTemperature(data.tempInKelvin)
+        showMainDescription(data.mainDescription, data.conditionCode)
         score.text = String.format("%.1f", ScoreGenerator.generateScore())
+    }
+
+    private fun showTemperature(temp: Float) {
+        val fahrenheit = TemperatureConverter.kelvinToFarenheit(temp)
+        val formattedTemp = String.format("%.0f", fahrenheit)
+        temperatureText.text = getString(R.string.temperature_1s, formattedTemp)
+        // TODO format in units
+        ScoreGenerator.tempInF = fahrenheit
+    }
+
+    private fun showMainDescription(desc: String, code: String) {
+        mainDescriptionText.text = desc
+        ScoreGenerator.conditionCode = code
     }
 }

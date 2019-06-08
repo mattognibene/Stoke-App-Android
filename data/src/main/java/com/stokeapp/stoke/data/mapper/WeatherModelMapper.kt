@@ -9,7 +9,8 @@ class WeatherModelMapper @Inject constructor() : Mapper<WeatherResponse, Weather
     override fun map(t: WeatherResponse): WeatherDataModel {
         return WeatherDataModel(
                 mainDescription = t.weather[0].main,
-                tempInKelvin = t.main.temp
+                tempInKelvin = t.main.temp,
+                conditionCode = t.weather[0].id
         )
     }
 }
