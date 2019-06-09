@@ -1,21 +1,24 @@
 package com.stokeapp.stoke.score
 
+import com.stokeapp.stoke.domain.model.WeatherDataModel
+import com.stokeapp.stoke.util.TemperatureConverter
+
 object ScoreGenerator {
 
-    var tempInF: Float = 0f
-    var conditionCode: String? = null
+    var weatherData: WeatherDataModel? = null
 
     fun generateScore(): Float {
-        var count = 1f
-
-        if (conditionCode != null) count++
-
-        val sum = generateDescriptionScore() + generateTemperatureScore()
-        return sum / count
+        weatherData?.let { data ->
+            val sum = generateDescriptionScore(data.conditionCode) +
+                    generateTemperatureScore(data.tempInKelvin) +
+                    generateHumidityScore(data.humidityPercentage) // TODO these should be weighted
+            return sum / 3
+        }
+        return -1f
     }
 
-    fun generateDescriptionScore(): Float {
-        val intCode = conditionCode?.toInt() ?: -1
+    fun generateDescriptionScore(conditionCode: String): Float {
+        val intCode = conditionCode.toInt()
         return when (intCode) {
             800 -> 10f
             in 200..299 -> 0f
@@ -35,7 +38,8 @@ object ScoreGenerator {
     }
     // https://openweathermap.org/weather-conditions
 
-    private fun generateTemperatureScore(): Float {
+    private fun generateTemperatureScore(tempInKelvin: Float): Float {
+        val tempInF = TemperatureConverter.kelvinToFarenheit(tempInKelvin)
         return when {
             tempInF < 40f -> 2f
             tempInF < 55 -> 4f
@@ -49,6 +53,17 @@ object ScoreGenerator {
             tempInF < 100f -> 8f
             tempInF < 105f -> 7f
             tempInF < 110f -> 6f
+            else -> 4f
+        }
+    }
+
+    private fun generateHumidityScore(humidity: Float): Float {
+        return when {
+            humidity < 25 -> 4f
+            humidity < 30 -> 6f
+            humidity < 40 -> 9f
+            humidity < 55f -> 10f
+            humidity < 70 -> 6f
             else -> 4f
         }
     }
