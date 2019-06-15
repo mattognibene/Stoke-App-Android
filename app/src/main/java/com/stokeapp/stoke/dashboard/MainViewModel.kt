@@ -13,6 +13,8 @@ class MainViewModel @Inject constructor(
     private val getSurfReportUseCase: GetSurfReport
 ) : ViewModel() {
 
+    var networkSemaphore = 0
+
     fun model(): ObservableTransformer<Action, State> {
         return ObservableTransformer { upstream ->
             upstream.flatMap { action ->
@@ -25,6 +27,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun getWeatherData(action: Action.GetWeatherData): Observable<State> {
+        networkSemaphore++
         return getWeatherDataUseCase.invoke(GetWeatherData.Params(action.location))
                 .map <State>(State::GetWeatherDataSuccess)
                 .onErrorReturn(State::GeteatherDataFailure)
@@ -32,6 +35,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun getSurfReport(action: Action.GetSurfReport): Observable<State> {
+        networkSemaphore++
         return getSurfReportUseCase.invoke(GetSurfReport.Params(action.spotId))
                 .map <State>(State::GetSurfReportSuccess)
                 .onErrorReturn(State::GetSurfReportFailure)

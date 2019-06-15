@@ -9,6 +9,7 @@
     android:background="@color/colorPrimary">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/stokeScoreCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -48,6 +49,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/weatherScoreCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -100,6 +102,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/surfReportCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -126,7 +129,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/swell_height"
                 android:textSize="22sp" />
-
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="64dp"
+        android:layout_height="0dp"
+        android:layout_weight=".5"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
 </LinearLayout>

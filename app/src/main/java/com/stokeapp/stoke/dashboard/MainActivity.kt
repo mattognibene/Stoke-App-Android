@@ -1,6 +1,7 @@
 package com.stokeapp.stoke.dashboard
 
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.jakewharton.rxrelay2.PublishRelay
@@ -41,17 +42,52 @@ class MainActivity : BaseActivity(), Consumer<State> {
 
     override fun onResume() {
         super.onResume()
+        refresh()
+    }
+
+    private fun refresh() {
+        showLoading()
         actions.accept(Action.GetWeatherData("4500546")) // TODO allow choosing location
         actions.accept(Action.GetSurfReport("390"))
     }
 
     override fun accept(state: State) {
         when (state) {
-            is State.GetWeatherDataSuccess -> showWeatherData(state.data)
-            is State.GeteatherDataFailure -> TODO()
-            is State.GetSurfReportSuccess -> showSurfReport(state.report)
-            is State.GetSurfReportFailure -> TODO()
+            is State.GetWeatherDataSuccess -> {
+                viewModel.networkSemaphore--
+                showWeatherData(state.data)
+            }
+            is State.GeteatherDataFailure -> {
+                viewModel.networkSemaphore--
+                TODO()
+            }
+            is State.GetSurfReportSuccess -> {
+                viewModel.networkSemaphore--
+                showSurfReport(state.report)
+            }
+            is State.GetSurfReportFailure -> {
+                viewModel.networkSemaphore--
+                TODO()
+            }
         }.exhaustive
+
+        if (viewModel.networkSemaphore == 0) {
+            showScreen()
+        }
+    }
+
+    private fun showScreen() {
+        stokeScoreCardView.visibility = View.VISIBLE
+        surfReportCardView.visibility = View.VISIBLE
+        weatherScoreCardView.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
+    }
+
+    private fun showLoading() {
+        stokeScoreCardView.visibility = View.GONE
+        surfReportCardView.visibility = View.GONE
+        weatherScoreCardView.visibility = View.GONE
+        progressBar.visibility = View.VISIBLE
     }
 
     private fun showWeatherData(data: WeatherDataModel) {
