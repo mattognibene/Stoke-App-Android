@@ -3,4 +3,7 @@
     <string name="stoke_score">Stoke Score</string>
     <string name="temperature_1s">Temperature: %1$s</string>
     <string name="humidity_1_s">Humidity: %1$s</string>
+    <string name="weather">Weather</string>
+    <string name="surf_report">Surf Report</string>
+    <string name="swell_height">Swell Height: %1$s - %2$s %3$s</string>
 </resources>

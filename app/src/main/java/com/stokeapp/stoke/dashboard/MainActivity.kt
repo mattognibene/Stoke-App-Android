@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.jakewharton.rxrelay2.PublishRelay
 import com.stokeapp.stoke.R
 import com.stokeapp.stoke.common.BaseActivity
+import com.stokeapp.stoke.domain.model.SurfReportModel
 import com.stokeapp.stoke.domain.model.WeatherDataModel
 import com.stokeapp.stoke.score.ScoreGenerator
 import com.stokeapp.stoke.util.TemperatureConverter
@@ -41,23 +42,27 @@ class MainActivity : BaseActivity(), Consumer<State> {
     override fun onResume() {
         super.onResume()
         actions.accept(Action.GetWeatherData("4500546")) // TODO allow choosing location
+        actions.accept(Action.GetSurfReport("390"))
     }
 
     override fun accept(state: State) {
         when (state) {
-            is State.GetWeatherDataSuccess -> showData(state.data)
+            is State.GetWeatherDataSuccess -> showWeatherData(state.data)
             is State.GeteatherDataFailure -> TODO()
+            is State.GetSurfReportSuccess -> showSurfReport(state.report)
+            is State.GetSurfReportFailure -> TODO()
         }.exhaustive
     }
 
-    private fun showData(data: WeatherDataModel) {
+    private fun showWeatherData(data: WeatherDataModel) {
         showTemperature(data.tempInKelvin)
-        showMainDescription(data.mainDescription)
+        showMainDescription(data.mainDescription) // TODO use longer description
         showHumidity(data.humidityPercentage)
         ScoreGenerator.weatherData = data
         score.text = String.format("%.1f", ScoreGenerator.generateScore())
     }
 
+    // Weather
     private fun showHumidity(humidity: Float) {
         val formattedHumidity = String.format("%.0f", humidity)
         humidityText.text = getString(R.string.humidity_1_s, formattedHumidity)
@@ -72,5 +77,18 @@ class MainActivity : BaseActivity(), Consumer<State> {
 
     private fun showMainDescription(desc: String) {
         mainDescriptionText.text = desc
+    }
+
+    // Surf
+    private fun showSurfReport(report: SurfReportModel) {
+        showSwellHeight(report.minBreakingHeight, report.maxBreakingHeight, report.unit)
+        ScoreGenerator.surfReport = report
+    }
+
+    private fun showSwellHeight(minBreakingHeight: Float, maxBreakingHeight: Float, units: String) {
+        swellHeightText.text = getString(R.string.swell_height,
+                minBreakingHeight.toString(),
+                maxBreakingHeight.toString(),
+                units)
     }
 }

@@ -1,6 +1,7 @@
 package com.stokeapp.stoke.dashboard
 
 import androidx.lifecycle.ViewModel
+import com.stokeapp.stoke.domain.interactor.surf.GetSurfReport
 import com.stokeapp.stoke.domain.interactor.weather.GetWeatherData
 import com.stokeapp.stoke.util.exhaustive
 import io.reactivex.Observable
@@ -8,7 +9,8 @@ import io.reactivex.ObservableTransformer
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
-    private val getWeatherDataUseCase: GetWeatherData
+    private val getWeatherDataUseCase: GetWeatherData,
+    private val getSurfReportUseCase: GetSurfReport
 ) : ViewModel() {
 
     fun model(): ObservableTransformer<Action, State> {
@@ -16,6 +18,7 @@ class MainViewModel @Inject constructor(
             upstream.flatMap { action ->
                 when (action) {
                     is Action.GetWeatherData -> getWeatherData(action)
+                    is Action.GetSurfReport -> getSurfReport(action)
                 }.exhaustive
             }
         }
@@ -25,6 +28,13 @@ class MainViewModel @Inject constructor(
         return getWeatherDataUseCase.invoke(GetWeatherData.Params(action.location))
                 .map <State>(State::GetWeatherDataSuccess)
                 .onErrorReturn(State::GeteatherDataFailure)
+                .toObservable()
+    }
+
+    private fun getSurfReport(action: Action.GetSurfReport): Observable<State> {
+        return getSurfReportUseCase.invoke(GetSurfReport.Params(action.spotId))
+                .map <State>(State::GetSurfReportSuccess)
+                .onErrorReturn(State::GetSurfReportFailure)
                 .toObservable()
     }
 }

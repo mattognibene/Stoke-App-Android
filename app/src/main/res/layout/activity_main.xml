@@ -27,6 +27,7 @@
                 android:textSize="22sp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:fontFamily="@font/din_medium"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"/>
             <TextView
@@ -60,6 +61,14 @@
             android:orientation="vertical">
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/weather"
+                android:fontFamily="@font/din_medium"
+                android:textColor="@color/black"
+                android:textSize="24sp"/>
+
+            <TextView
                 android:id="@+id/mainDescriptionText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -77,6 +86,37 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/humidity_1_s"
+                android:textSize="22sp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/surf_report"
+                android:fontFamily="@font/din_medium"
+                android:textColor="@color/black"
+                android:textSize="24sp"/>
+
+            <TextView
+                android:id="@+id/swellHeightText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/swell_height"
                 android:textSize="22sp" />
 
         </LinearLayout>

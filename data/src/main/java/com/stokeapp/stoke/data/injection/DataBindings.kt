@@ -1,6 +1,8 @@
 package com.stokeapp.stoke.data.injection
 
+import com.stokeapp.stoke.data.repository.DefaultSurfReportRepository
 import com.stokeapp.stoke.data.repository.DefaultWeatherRepository
+import com.stokeapp.stoke.domain.repository.SurfReportRepository
 import com.stokeapp.stoke.domain.repository.WeatherRepository
 import dagger.Binds
 import dagger.Module
@@ -12,4 +14,9 @@ abstract class DataBindings {
     abstract fun bindWeatherRepository(
         repository: DefaultWeatherRepository
     ): WeatherRepository
+
+    @Binds
+    abstract fun bindSurfReportRepository(
+        repository: DefaultSurfReportRepository
+    ): SurfReportRepository
 }
