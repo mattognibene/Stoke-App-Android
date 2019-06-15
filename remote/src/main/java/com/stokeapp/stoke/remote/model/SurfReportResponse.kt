@@ -8,15 +8,21 @@ data class SurfReportResponse(
     val swell: Swell
 ) {
     data class Swell(
-        val minBreakingHeight: Float,
         val absMinBreakingHeight: Float,
-        val maxBreakingHeight: Float,
         val absMaxBreakingHeight: Float,
         val unit: String,
-        val primary: Primary
+        val minBreakingHeight: Float,
+        val maxBreakingHeight: Float,
+        val components: Components
     )
 
-    data class Primary(
+    data class Components(
+        val combined: Report,
+        val primary: Report,
+        val secondary: Report
+    )
+
+    data class Report(
         val height: Float,
         val period: Float,
         val direction: Float,

@@ -12,6 +12,9 @@ class DefaultSurfReportRepository @Inject constructor(
     private val mapper: SurfReportModelMapper
 ) : SurfReportRepository {
     override fun getSurfReport(spotId: String): Single<SurfReportModel> {
-        return api.getSurfReport(spotId).map(mapper::map)
+        return api.getSurfReport(spotId)
+                .map { array ->
+                    mapper.map(array[0])
+                }
     }
 }

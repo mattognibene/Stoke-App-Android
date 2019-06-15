@@ -17,10 +17,10 @@ class SurfReportModelMapper @Inject constructor() : Mapper<SurfReportResponse, S
                 maxBreakingHeight = t.swell.maxBreakingHeight,
                 absMaxBreakingHeight = t.swell.absMaxBreakingHeight,
                 unit = t.swell.unit,
-                height = t.swell.primary.height,
-                period = t.swell.primary.period,
-                direction = t.swell.primary.direction,
-                compassDirection = t.swell.primary.compassDirection
+                height = t.swell.components.primary.height,
+                period = t.swell.components.primary.period,
+                direction = t.swell.components.primary.direction,
+                compassDirection = t.swell.components.primary.compassDirection
         )
     }
 }

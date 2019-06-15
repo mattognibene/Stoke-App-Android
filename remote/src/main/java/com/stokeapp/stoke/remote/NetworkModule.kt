@@ -56,7 +56,7 @@ object NetworkModule {
         builder: Retrofit.Builder
     ): MswApi {
         val url = requireNotNull(HttpUrl.parse(
-                "http://magicseaweed.com/api/3b194cfd579c8c6a418fc874c5cd4937/"))
+                "https://magicseaweed.com/api/3b194cfd579c8c6a418fc874c5cd4937/"))
         // TODO hide api key
         return builder.baseUrl(url)
                 .build()

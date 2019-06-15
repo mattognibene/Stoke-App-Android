@@ -9,5 +9,5 @@ interface MswApi {
     @GET("forecast/")
     fun getSurfReport(
         @Query("spot_id") spotId: String
-    ): Single<SurfReportResponse>
+    ): Single<Array<SurfReportResponse>>
 }
