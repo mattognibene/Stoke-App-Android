@@ -3,6 +3,7 @@ package com.stokeapp.stoke.score
 import com.stokeapp.stoke.domain.model.SurfReportModel
 import com.stokeapp.stoke.domain.model.WeatherDataModel
 import com.stokeapp.stoke.util.TemperatureConverter
+import timber.log.Timber
 
 object ScoreGenerator {
 
@@ -10,17 +11,26 @@ object ScoreGenerator {
     var surfReport: SurfReportModel? = null
 
     fun generateScore(): Float {
-        var sum = 0f
+        var weatherScore = 0f
         weatherData?.let { data ->
-            sum += generateDescriptionScore(data.conditionCode) +
-            generateTemperatureScore(data.tempInKelvin) +
-            generateHumidityScore(data.humidityPercentage) // TODO these should be weighted
+            weatherScore +=
+            generateDescriptionScore(data.conditionCode) * .30f +
+            generateTemperatureScore(data.tempInKelvin) * .30f +
+            generateHumidityScore(data.humidityPercentage) * .10f +
+            generateWindScore(data.windSpeed) * .30f // todo abstract weights
         }
+
+        var surfScore = 0f
         surfReport?.let { report ->
-            sum += Math.min(generateMswScore(report.solidRating.toFloat(),
-                    report.fadedRating.toFloat()), 5f) // TODO min values / adjustments
+            surfScore += generateMswScore(
+                    report.solidRating.toFloat(),
+                    report.fadedRating.toFloat()) // TODO min values / adjustments
         }
-        return sum / 4
+
+        Timber.d("Weather Score: $weatherScore")
+        Timber.d("Surf Score: $surfScore")
+
+        return weatherScore * .66f + surfScore * .33f
     }
 
     fun generateDescriptionScore(conditionCode: String): Float {
@@ -74,7 +84,22 @@ object ScoreGenerator {
         }
     }
 
+    // Based on beaufort wind scale
+    private fun generateWindScore(wind: Float): Float {
+        return when {
+            wind < 1 -> 9f
+            wind < 1.5 -> 10f
+            wind < 3.3 -> 9f
+            wind < 5.5 -> 8f
+            wind < 8 -> 7f
+            wind < 10 -> 5f
+            wind < 13 -> 4f
+            wind < 17 -> 3f
+            else -> 0f
+        }
+    }
+
     private fun generateMswScore(solidRating: Float, fadedRating: Float): Float {
-        return (2 * solidRating) + fadedRating // todo can this go higher than ten?
+        return Math.max(5.0f, (2 * solidRating) + fadedRating) // todo can this go higher than ten?
     }
 }

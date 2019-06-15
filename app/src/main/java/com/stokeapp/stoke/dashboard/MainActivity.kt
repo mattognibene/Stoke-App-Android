@@ -58,6 +58,7 @@ class MainActivity : BaseActivity(), Consumer<State> {
         showTemperature(data.tempInKelvin)
         showMainDescription(data.mainDescription) // TODO use longer description
         showHumidity(data.humidityPercentage)
+        showWind(data.windSpeed)
         ScoreGenerator.weatherData = data
         score.text = String.format("%.1f", ScoreGenerator.generateScore())
     }
@@ -75,6 +76,10 @@ class MainActivity : BaseActivity(), Consumer<State> {
         // TODO format in units
     }
 
+    private fun showWind(wind: Float) {
+        windText.text = getString(R.string.wind_speed, wind.toString(), "m/s") // TODO units
+    }
+
     private fun showMainDescription(desc: String) {
         mainDescriptionText.text = desc
     }
@@ -83,6 +88,7 @@ class MainActivity : BaseActivity(), Consumer<State> {
     private fun showSurfReport(report: SurfReportModel) {
         showSwellHeight(report.minBreakingHeight, report.maxBreakingHeight, report.unit)
         ScoreGenerator.surfReport = report
+        score.text = String.format("%.1f", ScoreGenerator.generateScore())
     }
 
     private fun showSwellHeight(minBreakingHeight: Float, maxBreakingHeight: Float, units: String) {

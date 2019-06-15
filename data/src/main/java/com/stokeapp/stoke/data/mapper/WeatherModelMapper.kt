@@ -11,7 +11,8 @@ class WeatherModelMapper @Inject constructor() : Mapper<WeatherResponse, Weather
                 mainDescription = t.weather[0].main,
                 tempInKelvin = t.main.temp,
                 conditionCode = t.weather[0].id,
-                humidityPercentage = t.main.humidity
+                humidityPercentage = t.main.humidity,
+                windSpeed = t.wind.speed
         )
     }
 }
