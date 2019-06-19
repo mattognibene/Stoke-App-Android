@@ -6,4 +6,5 @@
     <string name="weather">Weather</string>
     <string name="surf_report">Surf Report</string>
     <string name="swell_height">Swell Height: %1$s - %2$s %3$s</string>
+    <string name="wind_speed">Wind: %1$s %2$s</string>
 </resources>
