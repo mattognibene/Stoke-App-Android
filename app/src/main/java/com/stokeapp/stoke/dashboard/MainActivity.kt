@@ -1,6 +1,7 @@
 package com.stokeapp.stoke.dashboard
 
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.jakewharton.rxrelay2.PublishRelay
@@ -17,6 +18,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : BaseActivity(), Consumer<State> {
@@ -37,10 +39,21 @@ class MainActivity : BaseActivity(), Consumer<State> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .autoDisposable(lifecycle.scope())
                 .subscribe(this)
+        initUi()
     }
 
     override fun onResume() {
         super.onResume()
+        refresh()
+    }
+
+    private fun initUi() {
+        swipeRefresh.setOnRefreshListener {
+            refresh()
+        }
+    }
+
+    private fun refresh() {
         actions.accept(Action.GetWeatherData("4500546")) // TODO allow choosing location
         actions.accept(Action.GetSurfReport("390"))
     }
@@ -82,7 +95,24 @@ class MainActivity : BaseActivity(), Consumer<State> {
     // Surf
     private fun showSurfReport(report: SurfReportModel) {
         showSwellHeight(report.minBreakingHeight, report.maxBreakingHeight, report.unit)
+        showSwellScore(report.solidRating, report.fadedRating)
         ScoreGenerator.surfReport = report
+    }
+
+    private fun showSwellScore(solidRating: Int, fadedRating: Int) {
+        swellRatingContainer.removeAllViews()
+        Timber.d("Solid Rating: $solidRating Faded Rating: $fadedRating")
+        for (i in 1..solidRating) {
+            val imageView = ImageView(this)
+            imageView.setImageResource(R.drawable.ic_star)
+            swellRatingContainer.addView(imageView)
+        }
+
+        for (i in 1..fadedRating) {
+            val imageView = ImageView(this)
+            imageView.setImageResource(R.drawable.ic_star_border)
+            swellRatingContainer.addView(imageView)
+        }
     }
 
     private fun showSwellHeight(minBreakingHeight: Float, maxBreakingHeight: Float, units: String) {
