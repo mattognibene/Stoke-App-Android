@@ -10,6 +10,7 @@ import com.stokeapp.stoke.R
 import com.stokeapp.stoke.common.BaseActivity
 import com.stokeapp.stoke.domain.model.SurfReportModel
 import com.stokeapp.stoke.domain.model.WeatherDataModel
+import com.stokeapp.stoke.location.LocationActivity
 import com.stokeapp.stoke.score.ScoreGenerator
 import com.stokeapp.stoke.util.TemperatureConverter
 import com.stokeapp.stoke.util.exhaustive
@@ -22,18 +23,18 @@ import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivity : BaseActivity(), Consumer<State> {
+class DashboardActivity : BaseActivity(), Consumer<State> {
 
     override fun layoutId(): Int = R.layout.activity_main
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
-    private lateinit var viewModel: MainViewModel
+    private lateinit var viewModel: DashboardViewModel
     private val actions = PublishRelay.create<Action>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, factory)[MainViewModel::class.java]
+        viewModel = ViewModelProviders.of(this, factory)[DashboardViewModel::class.java]
 
         actions.compose(viewModel.model())
                 .subscribeOn(Schedulers.io())
@@ -51,6 +52,12 @@ class MainActivity : BaseActivity(), Consumer<State> {
     private fun initUi() {
         swipeRefresh.setOnRefreshListener {
             refresh()
+        }
+        editLocation.setOnClickListener {
+            LocationActivity.launchForResult(this)
+        }
+        locationText.setOnClickListener {
+            LocationActivity.launchForResult(this)
         }
     }
 

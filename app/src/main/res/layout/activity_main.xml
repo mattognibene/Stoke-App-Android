@@ -6,7 +6,38 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:orientation="vertical"
-    tools:context="com.stokeapp.stoke.dashboard.MainActivity">
+    tools:context="com.stokeapp.stoke.dashboard.DashboardActivity">
+
+    <LinearLayout
+        android:id="@+id/locationBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimaryDark"
+        android:elevation="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/editLocation"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="16dp"
+            android:clickable="true"
+            android:src="@drawable/ic_location_pin"
+            android:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/locationText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:clickable="true"
+            android:fontFamily="@font/din_medium"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            tools:text="Atlantic City" />
+
+    </LinearLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"

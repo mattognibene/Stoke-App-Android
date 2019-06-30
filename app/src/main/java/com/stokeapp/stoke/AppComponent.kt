@@ -1,7 +1,6 @@
 package com.stokeapp.stoke
 
 import android.app.Application
-import com.stokeapp.stoke.dashboard.AppBindings
 import com.stokeapp.stoke.data.injection.DataModule
 import dagger.BindsInstance
 import dagger.Component

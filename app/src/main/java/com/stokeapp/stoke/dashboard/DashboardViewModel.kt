@@ -8,7 +8,7 @@ import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(
+class DashboardViewModel @Inject constructor(
     private val getWeatherDataUseCase: GetWeatherData,
     private val getSurfReportUseCase: GetSurfReport
 ) : ViewModel() {
