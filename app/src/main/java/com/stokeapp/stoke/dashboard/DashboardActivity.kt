@@ -65,34 +65,24 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
         if (!swipeRefresh.isRefreshing) {
             showLoading()
         }
-        actions.accept(Action.GetWeatherData("4500546")) // TODO allow choosing location
-        actions.accept(Action.GetSurfReport("390"))
+        // TODO allow choosing location
+        actions.accept(Action.GetCombinedData(location = Location.ATLANTIC_CITY))
         swipeRefresh.isRefreshing = false
     }
 
     override fun accept(state: State) {
         when (state) {
-            is State.GetWeatherDataSuccess -> {
-                viewModel.networkSemaphore--
-                showWeatherData(state.data)
+            is State.Loading -> showLoading()
+            is State.GetCombinedDataSuccess -> {
+                showSurfReport(state.data.surfData)
+                showWeatherData(state.data.weatherData)
+                showScreen()
             }
-            is State.GeteatherDataFailure -> {
-                viewModel.networkSemaphore--
-                TODO()
-            }
-            is State.GetSurfReportSuccess -> {
-                viewModel.networkSemaphore--
-                showSurfReport(state.report)
-            }
-            is State.GetSurfReportFailure -> {
-                viewModel.networkSemaphore--
-                TODO()
+            is State.GetCombinedDataFailure -> {
+                Timber.e(state.e)
+                // TODO handle
             }
         }.exhaustive
-
-        if (viewModel.networkSemaphore == 0) {
-            showScreen()
-        }
     }
 
     private fun showScreen() {

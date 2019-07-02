@@ -11,6 +11,7 @@
     <!-- See: https://material.io/design/layout/spacing-methods.html -->
     <dimen name="default_baseline">8dp</dimen>
     <dimen name="default_keyline">72dp</dimen>
+    <dimen name="headerTextSize">24sp</dimen>
 
     <!-- Define additional dimensions here -->
     

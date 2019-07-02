@@ -24,7 +24,8 @@
             android:layout_marginStart="16dp"
             android:clickable="true"
             android:src="@drawable/ic_location_pin"
-            android:tint="@color/white" />
+            android:tint="@color/white"
+            android:focusable="true" />
 
         <TextView
             android:id="@+id/locationText"
@@ -34,8 +35,9 @@
             android:clickable="true"
             android:fontFamily="@font/din_medium"
             android:textColor="@color/white"
-            android:textSize="24sp"
-            tools:text="Atlantic City" />
+            android:textSize="@dimen/headerTextSize"
+            tools:text="Atlantic City"
+            android:focusable="true" />
 
     </LinearLayout>
 
@@ -110,7 +112,7 @@
                         android:fontFamily="@font/din_medium"
                         android:text="@string/weather"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="@dimen/headerTextSize" />
 
                     <TextView
                         android:id="@+id/mainDescriptionText"
@@ -163,7 +165,7 @@
                         android:fontFamily="@font/din_medium"
                         android:text="@string/surf_report"
                         android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textSize="@dimen/headerTextSize" />
 
                     <TextView
                         android:id="@+id/swellHeightText"
