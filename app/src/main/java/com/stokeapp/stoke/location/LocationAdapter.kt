@@ -9,22 +9,31 @@ import androidx.recyclerview.widget.RecyclerView
 import com.stokeapp.stoke.R
 import kotlinx.android.synthetic.main.item_location.view.*
 
-class LocationAdapter :
-        ListAdapter<LocationItem, LocationAdapter.ViewHolder>(LocationDiffCallback()) {
+typealias OnLocationClickListener = ((LocationItem) -> Unit)
+
+class LocationAdapter(
+    private val onLocationClickListener: OnLocationClickListener
+) : ListAdapter<LocationItem, LocationAdapter.ViewHolder>(LocationDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.item_location, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view, onLocationClickListener)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(
+        itemView: View,
+        private val onLocationClickListener: OnLocationClickListener
+    ) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: LocationItem) {
             itemView.locationText.text = item.location
+            itemView.setOnClickListener {
+                onLocationClickListener.invoke(item)
+            }
         }
     }
 

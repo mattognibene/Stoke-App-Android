@@ -100,6 +100,6 @@ object ScoreGenerator {
     }
 
     private fun generateMswScore(solidRating: Float, fadedRating: Float): Float {
-        return Math.max(5.0f, (2 * solidRating) + fadedRating) // todo can this go higher than ten?
+        return (solidRating + (fadedRating / 2)) + 5.0f
     }
 }

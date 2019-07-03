@@ -1,5 +1,7 @@
 package com.stokeapp.stoke.dashboard
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import android.view.View
@@ -32,6 +34,8 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
     private lateinit var viewModel: DashboardViewModel
     private val actions = PublishRelay.create<Action>()
 
+    private var location: Location = Location.ATLANTIC_CITY
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(this, factory)[DashboardViewModel::class.java]
@@ -42,11 +46,32 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
                 .autoDisposable(lifecycle.scope())
                 .subscribe(this)
         initUi()
+        initLocation()
     }
 
     override fun onResume() {
         super.onResume()
         refresh()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            LocationActivity.REQUEST_SELECT_LOCATION -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    handleChangeLocation(data?.getStringExtra(LocationActivity.EXTRA_LOCATION))
+                }
+            }
+        }
+        refresh()
+    }
+
+    private fun refresh() {
+        if (!swipeRefresh.isRefreshing) {
+            showLoading()
+        }
+        actions.accept(Action.GetCombinedData(location = location))
+        swipeRefresh.isRefreshing = false
     }
 
     private fun initUi() {
@@ -61,13 +86,33 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
         }
     }
 
-    private fun refresh() {
-        if (!swipeRefresh.isRefreshing) {
-            showLoading()
+    private fun initLocation() {
+        val pref = applicationContext.getSharedPreferences(PREFERENCES_NAME, 0)
+        val location = Location.getLocation(
+                pref.getString(LOCATION_PREFERENCE, Location.ATLANTIC_CITY.name))
+        location?.let {
+            this.location = it
+            locationText.text = it.location
         }
-        // TODO allow choosing location
-        actions.accept(Action.GetCombinedData(location = Location.ATLANTIC_CITY))
-        swipeRefresh.isRefreshing = false
+    }
+
+    private fun handleChangeLocation(locationName: String?) {
+        locationName?.let { name ->
+            val newLocation = Location.getLocation(name)
+            newLocation?.let { loc ->
+                this.location = loc
+                locationText.text = loc.location
+            }
+            storeLocation(name)
+        }
+    }
+
+    private fun storeLocation(locationName: String) {
+        val pref = applicationContext.getSharedPreferences(PREFERENCES_NAME, 0)
+        pref
+                .edit()
+                .putString(LOCATION_PREFERENCE, locationName)
+                .apply()
     }
 
     override fun accept(state: State) {
@@ -86,6 +131,7 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
     }
 
     private fun showScreen() {
+        score.text = String.format("%.1f", ScoreGenerator.generateScore())
         stokeScoreCardView.visibility = View.VISIBLE
         surfReportCardView.visibility = View.VISIBLE
         weatherScoreCardView.visibility = View.VISIBLE
@@ -105,7 +151,6 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
         showHumidity(data.humidityPercentage)
         showWind(data.windSpeed)
         ScoreGenerator.weatherData = data
-        score.text = String.format("%.1f", ScoreGenerator.generateScore())
     }
 
     // Weather
@@ -134,7 +179,6 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
         showSwellHeight(report.minBreakingHeight, report.maxBreakingHeight, report.unit)
         showSwellScore(report.solidRating, report.fadedRating)
         ScoreGenerator.surfReport = report
-        score.text = String.format("%.1f", ScoreGenerator.generateScore())
     }
 
     private fun showSwellScore(solidRating: Int, fadedRating: Int) {
@@ -158,5 +202,10 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
                 minBreakingHeight.toString(),
                 maxBreakingHeight.toString(),
                 units)
+    }
+
+    companion object {
+        private const val PREFERENCES_NAME = "preferences_stoke"
+        private const val LOCATION_PREFERENCE = "pref_key:location"
     }
 }

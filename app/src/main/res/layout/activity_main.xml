@@ -23,9 +23,9 @@
             android:layout_height="32dp"
             android:layout_marginStart="16dp"
             android:clickable="true"
+            android:focusable="true"
             android:src="@drawable/ic_location_pin"
-            android:tint="@color/white"
-            android:focusable="true" />
+            android:tint="@color/white" />
 
         <TextView
             android:id="@+id/locationText"
@@ -33,11 +33,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:clickable="true"
+            android:focusable="true"
             android:fontFamily="@font/din_medium"
             android:textColor="@color/white"
             android:textSize="@dimen/headerTextSize"
-            tools:text="Atlantic City"
-            android:focusable="true" />
+            tools:text="Atlantic City" />
 
     </LinearLayout>
 
