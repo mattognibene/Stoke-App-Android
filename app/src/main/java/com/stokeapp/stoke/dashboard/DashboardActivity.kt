@@ -1,5 +1,7 @@
 package com.stokeapp.stoke.dashboard
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import android.view.View
@@ -10,6 +12,7 @@ import com.stokeapp.stoke.R
 import com.stokeapp.stoke.common.BaseActivity
 import com.stokeapp.stoke.domain.model.SurfReportModel
 import com.stokeapp.stoke.domain.model.WeatherDataModel
+import com.stokeapp.stoke.location.LocationActivity
 import com.stokeapp.stoke.score.ScoreGenerator
 import com.stokeapp.stoke.util.TemperatureConverter
 import com.stokeapp.stoke.util.exhaustive
@@ -22,18 +25,20 @@ import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivity : BaseActivity(), Consumer<State> {
+class DashboardActivity : BaseActivity(), Consumer<State> {
 
     override fun layoutId(): Int = R.layout.activity_main
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
-    private lateinit var viewModel: MainViewModel
+    private lateinit var viewModel: DashboardViewModel
     private val actions = PublishRelay.create<Action>()
+
+    private var location: Location = Location.ATLANTIC_CITY
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, factory)[MainViewModel::class.java]
+        viewModel = ViewModelProviders.of(this, factory)[DashboardViewModel::class.java]
 
         actions.compose(viewModel.model())
                 .subscribeOn(Schedulers.io())
@@ -41,6 +46,7 @@ class MainActivity : BaseActivity(), Consumer<State> {
                 .autoDisposable(lifecycle.scope())
                 .subscribe(this)
         initUi()
+        initLocation()
     }
 
     override fun onResume() {
@@ -48,47 +54,84 @@ class MainActivity : BaseActivity(), Consumer<State> {
         refresh()
     }
 
-    private fun initUi() {
-        swipeRefresh.setOnRefreshListener {
-            refresh()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            LocationActivity.REQUEST_SELECT_LOCATION -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    handleChangeLocation(data?.getStringExtra(LocationActivity.EXTRA_LOCATION))
+                }
+            }
         }
+        refresh()
     }
 
     private fun refresh() {
         if (!swipeRefresh.isRefreshing) {
             showLoading()
         }
-        actions.accept(Action.GetWeatherData("4500546")) // TODO allow choosing location
-        actions.accept(Action.GetSurfReport("390"))
+        actions.accept(Action.GetCombinedData(location = location))
         swipeRefresh.isRefreshing = false
+    }
+
+    private fun initUi() {
+        swipeRefresh.setOnRefreshListener {
+            refresh()
+        }
+        editLocation.setOnClickListener {
+            LocationActivity.launchForResult(this)
+        }
+        locationText.setOnClickListener {
+            LocationActivity.launchForResult(this)
+        }
+    }
+
+    private fun initLocation() {
+        val pref = applicationContext.getSharedPreferences(PREFERENCES_NAME, 0)
+        val location = Location.getLocation(
+                pref.getString(LOCATION_PREFERENCE, Location.ATLANTIC_CITY.name))
+        location?.let {
+            this.location = it
+            locationText.text = it.location
+        }
+    }
+
+    private fun handleChangeLocation(locationName: String?) {
+        locationName?.let { name ->
+            val newLocation = Location.getLocation(name)
+            newLocation?.let { loc ->
+                this.location = loc
+                locationText.text = loc.location
+            }
+            storeLocation(name)
+        }
+    }
+
+    private fun storeLocation(locationName: String) {
+        val pref = applicationContext.getSharedPreferences(PREFERENCES_NAME, 0)
+        pref
+                .edit()
+                .putString(LOCATION_PREFERENCE, locationName)
+                .apply()
     }
 
     override fun accept(state: State) {
         when (state) {
-            is State.GetWeatherDataSuccess -> {
-                viewModel.networkSemaphore--
-                showWeatherData(state.data)
+            is State.Loading -> showLoading()
+            is State.GetCombinedDataSuccess -> {
+                showSurfReport(state.data.surfData)
+                showWeatherData(state.data.weatherData)
+                showScreen()
             }
-            is State.GeteatherDataFailure -> {
-                viewModel.networkSemaphore--
-                TODO()
-            }
-            is State.GetSurfReportSuccess -> {
-                viewModel.networkSemaphore--
-                showSurfReport(state.report)
-            }
-            is State.GetSurfReportFailure -> {
-                viewModel.networkSemaphore--
-                TODO()
+            is State.GetCombinedDataFailure -> {
+                Timber.e(state.e)
+                // TODO handle
             }
         }.exhaustive
-
-        if (viewModel.networkSemaphore == 0) {
-            showScreen()
-        }
     }
 
     private fun showScreen() {
+        score.text = String.format("%.1f", ScoreGenerator.generateScore())
         stokeScoreCardView.visibility = View.VISIBLE
         surfReportCardView.visibility = View.VISIBLE
         weatherScoreCardView.visibility = View.VISIBLE
@@ -108,7 +151,6 @@ class MainActivity : BaseActivity(), Consumer<State> {
         showHumidity(data.humidityPercentage)
         showWind(data.windSpeed)
         ScoreGenerator.weatherData = data
-        score.text = String.format("%.1f", ScoreGenerator.generateScore())
     }
 
     // Weather
@@ -137,7 +179,6 @@ class MainActivity : BaseActivity(), Consumer<State> {
         showSwellHeight(report.minBreakingHeight, report.maxBreakingHeight, report.unit)
         showSwellScore(report.solidRating, report.fadedRating)
         ScoreGenerator.surfReport = report
-        score.text = String.format("%.1f", ScoreGenerator.generateScore())
     }
 
     private fun showSwellScore(solidRating: Int, fadedRating: Int) {
@@ -161,5 +202,10 @@ class MainActivity : BaseActivity(), Consumer<State> {
                 minBreakingHeight.toString(),
                 maxBreakingHeight.toString(),
                 units)
+    }
+
+    companion object {
+        private const val PREFERENCES_NAME = "preferences_stoke"
+        private const val LOCATION_PREFERENCE = "pref_key:location"
     }
 }

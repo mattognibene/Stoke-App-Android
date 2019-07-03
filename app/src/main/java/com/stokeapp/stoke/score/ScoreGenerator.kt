@@ -33,7 +33,7 @@ object ScoreGenerator {
         return weatherScore * .66f + surfScore * .33f
     }
 
-    fun generateDescriptionScore(conditionCode: String): Float {
+    private fun generateDescriptionScore(conditionCode: String): Float {
         val intCode = conditionCode.toInt()
         return when (intCode) {
             800 -> 10f
@@ -90,16 +90,16 @@ object ScoreGenerator {
             wind < 1 -> 9f
             wind < 1.5 -> 10f
             wind < 3.3 -> 9f
-            wind < 5.5 -> 8f
-            wind < 8 -> 7f
-            wind < 10 -> 5f
-            wind < 13 -> 4f
-            wind < 17 -> 3f
+            wind < 4 -> 8f
+            wind < 5.5 -> 7f
+            wind < 8 -> 5f
+            wind < 10 -> 4f
+            wind < 13 -> 3f
             else -> 0f
         }
     }
 
     private fun generateMswScore(solidRating: Float, fadedRating: Float): Float {
-        return Math.max(5.0f, (2 * solidRating) + fadedRating) // todo can this go higher than ten?
+        return (solidRating + (fadedRating / 2)) + 5.0f
     }
 }
