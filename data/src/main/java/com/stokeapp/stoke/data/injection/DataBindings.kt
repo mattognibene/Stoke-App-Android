@@ -1,7 +1,9 @@
 package com.stokeapp.stoke.data.injection
 
+import com.stokeapp.stoke.data.repository.DefaultLocationRepository
 import com.stokeapp.stoke.data.repository.DefaultSurfReportRepository
 import com.stokeapp.stoke.data.repository.DefaultWeatherRepository
+import com.stokeapp.stoke.domain.repository.LocationRepository
 import com.stokeapp.stoke.domain.repository.SurfReportRepository
 import com.stokeapp.stoke.domain.repository.WeatherRepository
 import dagger.Binds
@@ -19,4 +21,9 @@ abstract class DataBindings {
     abstract fun bindSurfReportRepository(
         repository: DefaultSurfReportRepository
     ): SurfReportRepository
+
+    @Binds
+    abstract fun bindLocationRepository(
+        repository: DefaultLocationRepository
+    ): LocationRepository
 }

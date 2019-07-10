@@ -3,6 +3,8 @@ package com.stokeapp.stoke.dashboard
 import androidx.lifecycle.ViewModel
 import com.stokeapp.stoke.dashboard.surf.SurfState
 import com.stokeapp.stoke.dashboard.weather.WeatherState
+import com.stokeapp.stoke.domain.interactor.invoke
+import com.stokeapp.stoke.domain.interactor.location.GetLocation
 import com.stokeapp.stoke.domain.interactor.surf.GetSurfReport
 import com.stokeapp.stoke.domain.interactor.weather.GetWeatherData
 import com.stokeapp.stoke.util.exhaustive
@@ -13,7 +15,8 @@ import javax.inject.Inject
 
 class DashboardViewModel @Inject constructor(
     private val getWeatherDataUseCase: GetWeatherData,
-    private val getSurfReportUseCase: GetSurfReport
+    private val getSurfReportUseCase: GetSurfReport,
+    private val getLocationUseCase: GetLocation
 ) : ViewModel() {
 
     fun model(): ObservableTransformer<Action, State> {
@@ -21,6 +24,7 @@ class DashboardViewModel @Inject constructor(
             upstream.flatMap { action ->
                 when (action) {
                     is Action.GetCombinedData -> getCombinedData(action)
+                    Action.GetLocation -> getLocation()
                 }.exhaustive
             }
         }
@@ -60,5 +64,12 @@ class DashboardViewModel @Inject constructor(
                     }
                 })
                 .startWith(State.Loading)
+    }
+
+    private fun getLocation(): Observable<State> {
+        return getLocationUseCase.invoke()
+                .map <State> (State::GetLocationSuccess)
+                .onErrorReturn(State::GetLocationFailure)
+                .toObservable()
     }
 }

@@ -46,7 +46,6 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
                 .autoDisposable(lifecycle.scope())
                 .subscribe(this)
         initUi()
-        initLocation()
     }
 
     override fun onResume() {
@@ -70,7 +69,7 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
         if (!swipeRefresh.isRefreshing) {
             showLoading()
         }
-        actions.accept(Action.GetCombinedData(location = location))
+        actions.accept(Action.GetLocation)
         swipeRefresh.isRefreshing = false
     }
 
@@ -84,35 +83,19 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
         locationText.setOnClickListener {
             LocationActivity.launchForResult(this)
         }
+        actions.accept(Action.GetLocation)
     }
 
-    private fun initLocation() {
-        val pref = applicationContext.getSharedPreferences(PREFERENCES_NAME, 0)
-        val location = Location.getLocation(
-                pref.getString(LOCATION_PREFERENCE, Location.ATLANTIC_CITY.name))
-        location?.let {
-            this.location = it
-            locationText.text = it.location
+    private fun initLocation(name: String) {
+        val location = Location.getLocation(name)
+        location?.let { loc ->
+            this.location = loc
+            locationText.text = loc.location
         }
     }
 
     private fun handleChangeLocation(locationName: String?) {
-        locationName?.let { name ->
-            val newLocation = Location.getLocation(name)
-            newLocation?.let { loc ->
-                this.location = loc
-                locationText.text = loc.location
-            }
-            storeLocation(name)
-        }
-    }
-
-    private fun storeLocation(locationName: String) {
-        val pref = applicationContext.getSharedPreferences(PREFERENCES_NAME, 0)
-        pref
-                .edit()
-                .putString(LOCATION_PREFERENCE, locationName)
-                .apply()
+        locationName?.let { name -> initLocation(name) }
     }
 
     override fun accept(state: State) {
@@ -126,6 +109,15 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
             is State.GetCombinedDataFailure -> {
                 Timber.e(state.e)
                 // TODO handle
+            }
+            is State.GetLocationSuccess -> {
+                initLocation(state.locationName)
+                actions.accept(Action.GetCombinedData(location = location))
+            }
+            is State.GetLocationFailure -> {
+                Timber.e(state.e)
+                initLocation(Location.ATLANTIC_CITY.name)
+                actions.accept(Action.GetCombinedData(location = location))
             }
         }.exhaustive
     }
@@ -202,10 +194,5 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
                 minBreakingHeight.toString(),
                 maxBreakingHeight.toString(),
                 units)
-    }
-
-    companion object {
-        private const val PREFERENCES_NAME = "preferences_stoke"
-        private const val LOCATION_PREFERENCE = "pref_key:location"
     }
 }
