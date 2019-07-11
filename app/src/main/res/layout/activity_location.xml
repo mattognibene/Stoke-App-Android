@@ -12,6 +12,7 @@
         android:background="@color/colorPrimaryDark"
         app:navigationIcon="@drawable/ic_arrow_back_white"
         app:title="@string/select_location"
+        app:titleTextAppearance="@style/ToolbarTheme"
         app:titleTextColor="@color/white" />
 
     <androidx.recyclerview.widget.RecyclerView

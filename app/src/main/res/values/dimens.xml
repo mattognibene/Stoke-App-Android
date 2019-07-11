@@ -12,6 +12,8 @@
     <dimen name="default_baseline">8dp</dimen>
     <dimen name="default_keyline">72dp</dimen>
     <dimen name="headerTextSize">24sp</dimen>
+    <dimen name="settings_item_text_size">24sp</dimen>
+    <dimen name="settings_item_vertical_padding">8dp</dimen>
 
     <!-- Define additional dimensions here -->
     

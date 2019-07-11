@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".dashboard.DashboardActivity">
+        <activity android:name=".dashboard.DashboardActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -20,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".location.LocationActivity" />
+        <activity android:name=".settings.SettingsActivity" />
     </application>
 
 </manifest>

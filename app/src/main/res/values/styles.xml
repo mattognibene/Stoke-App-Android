@@ -1,5 +1,9 @@
 <resources>
 
     <!-- Define custom styles here -->
-
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:fontFamily">@font/din_medium</item>
+        <item name="android:textSize">@dimen/headerTextSize</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
 </resources>
