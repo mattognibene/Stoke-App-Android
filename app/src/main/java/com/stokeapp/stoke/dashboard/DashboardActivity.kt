@@ -14,6 +14,7 @@ import com.stokeapp.stoke.domain.model.SurfReportModel
 import com.stokeapp.stoke.domain.model.WeatherDataModel
 import com.stokeapp.stoke.location.LocationActivity
 import com.stokeapp.stoke.score.ScoreGenerator
+import com.stokeapp.stoke.settings.SettingsActivity
 import com.stokeapp.stoke.util.TemperatureConverter
 import com.stokeapp.stoke.util.exhaustive
 import com.uber.autodispose.android.lifecycle.scope
@@ -83,7 +84,9 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
         locationText.setOnClickListener {
             LocationActivity.launchForResult(this)
         }
-        actions.accept(Action.GetLocation)
+        btnSettings.setOnClickListener {
+            SettingsActivity.launch(this)
+        }
     }
 
     private fun initLocation(name: String) {

@@ -12,6 +12,7 @@
         android:background="@color/colorPrimaryDark"
         app:navigationIcon="@drawable/ic_arrow_back_white"
         app:title="Settings"
+        app:titleTextAppearance="@style/ToolbarTheme"
         app:titleTextColor="@color/white" />
 
     <ScrollView
@@ -29,26 +30,37 @@
                 android:id="@+id/settingLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bottom_border"
                 android:paddingTop="@dimen/settings_item_vertical_padding"
                 android:paddingBottom="@dimen/settings_item_vertical_padding"
                 android:text="@string/location"
                 android:textColor="@color/black"
-                android:textSize="@dimen/settings_item_text_size" />
+                android:textSize="@dimen/settings_item_text_size"
+                android:drawableStart="@drawable/ic_location_pin"
+                android:drawableTint="@color/grey"
+                android:drawablePadding="12dp"
+                android:gravity="center_vertical" />
 
             <TextView
                 android:id="@+id/settingsWeights"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bottom_border"
                 android:paddingTop="@dimen/settings_item_vertical_padding"
                 android:paddingBottom="@dimen/settings_item_vertical_padding"
                 android:text="@string/weights"
                 android:textColor="@color/black"
-                android:textSize="@dimen/settings_item_text_size" />
+                android:textSize="@dimen/settings_item_text_size"
+                android:drawableStart="@drawable/ic_weights"
+                android:drawableTint="@color/grey"
+                android:drawablePadding="12dp"
+                android:gravity="center_vertical" />
 
             <TextView
                 android:id="@+id/appVersion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bottom_border"
                 android:paddingTop="@dimen/settings_item_vertical_padding"
                 android:paddingBottom="@dimen/settings_item_vertical_padding"
                 android:text="@string/app_version"

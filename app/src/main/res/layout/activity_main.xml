@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:context="com.stokeapp.stoke.dashboard.DashboardActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/locationBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -25,7 +25,10 @@
             android:clickable="true"
             android:focusable="true"
             android:src="@drawable/ic_location_pin"
-            android:tint="@color/white" />
+            android:tint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/locationText"
@@ -37,9 +40,22 @@
             android:fontFamily="@font/din_medium"
             android:textColor="@color/white"
             android:textSize="@dimen/headerTextSize"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/editLocation"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Atlantic City" />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/btnSettings"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_settings"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
@@ -181,14 +197,14 @@
                         android:orientation="horizontal" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="64dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight=".5"
+                android:visibility="gone" />
         </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="64dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight=".5"
-        android:visibility="gone" />
 </LinearLayout>
