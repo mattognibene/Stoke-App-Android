@@ -7,6 +7,8 @@ import com.stokeapp.stoke.domain.interactor.invoke
 import com.stokeapp.stoke.domain.interactor.location.GetLocation
 import com.stokeapp.stoke.domain.interactor.surf.GetSurfReport
 import com.stokeapp.stoke.domain.interactor.weather.GetWeatherData
+import com.stokeapp.stoke.domain.interactor.weights.GetWeights
+import com.stokeapp.stoke.domain.model.WeightsModel
 import com.stokeapp.stoke.util.exhaustive
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -16,8 +18,11 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val getWeatherDataUseCase: GetWeatherData,
     private val getSurfReportUseCase: GetSurfReport,
-    private val getLocationUseCase: GetLocation
+    private val getLocationUseCase: GetLocation,
+    private val getWeightsUseCase: GetWeights
 ) : ViewModel() {
+
+    var weights: WeightsModel = WeightsModel.equalSplit()
 
     fun model(): ObservableTransformer<Action, State> {
         return ObservableTransformer { upstream ->
@@ -25,6 +30,7 @@ class DashboardViewModel @Inject constructor(
                 when (action) {
                     is Action.GetCombinedData -> getCombinedData(action)
                     Action.GetLocation -> getLocation()
+                    Action.GetWeights -> getWeights()
                 }.exhaustive
             }
         }
@@ -71,5 +77,23 @@ class DashboardViewModel @Inject constructor(
                 .map <State> (State::GetLocationSuccess)
                 .onErrorReturn(State::GetLocationFailure)
                 .toObservable()
+    }
+
+    private fun getWeights(): Observable<State> {
+        return getWeightsUseCase.invoke()
+                .map <State> { model ->
+                    if (model.sum() < .1f) {
+                        State.GetWeightsSuccess(WeightsModel.equalSplit())
+                    } else {
+                        val adjustedSurf = model.surfWeight / model.sum()
+                        val adjustedWeather = model.weatherWeight / model.sum()
+                        State.GetWeightsSuccess(WeightsModel(
+                                surfWeight = adjustedSurf,
+                                weatherWeight = adjustedWeather))
+                    }
+                }
+                .onErrorReturn(State::GetWeightsFailure)
+                .toObservable()
+                .startWith(State.Loading)
     }
 }

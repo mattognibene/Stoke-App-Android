@@ -31,30 +31,45 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bottom_border"
+                android:drawableStart="@drawable/ic_location_pin"
+                android:drawablePadding="12dp"
+                android:drawableTint="@color/grey"
+                android:gravity="center_vertical"
                 android:paddingTop="@dimen/settings_item_vertical_padding"
                 android:paddingBottom="@dimen/settings_item_vertical_padding"
                 android:text="@string/location"
                 android:textColor="@color/black"
-                android:textSize="@dimen/settings_item_text_size"
-                android:drawableStart="@drawable/ic_location_pin"
-                android:drawableTint="@color/grey"
-                android:drawablePadding="12dp"
-                android:gravity="center_vertical" />
+                android:textSize="@dimen/settings_item_text_size" />
 
             <TextView
                 android:id="@+id/settingsWeights"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bottom_border"
+                android:drawableStart="@drawable/ic_weights"
+                android:drawablePadding="12dp"
+                android:drawableTint="@color/grey"
+                android:gravity="center_vertical"
                 android:paddingTop="@dimen/settings_item_vertical_padding"
                 android:paddingBottom="@dimen/settings_item_vertical_padding"
                 android:text="@string/weights"
                 android:textColor="@color/black"
-                android:textSize="@dimen/settings_item_text_size"
-                android:drawableStart="@drawable/ic_weights"
-                android:drawableTint="@color/grey"
+                android:textSize="@dimen/settings_item_text_size" />
+
+            <TextView
+                android:id="@+id/settingUnits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bottom_border"
+                android:drawableStart="@drawable/ic_units"
                 android:drawablePadding="12dp"
-                android:gravity="center_vertical" />
+                android:drawableTint="@color/grey"
+                android:gravity="center_vertical"
+                android:paddingTop="@dimen/settings_item_vertical_padding"
+                android:paddingBottom="@dimen/settings_item_vertical_padding"
+                android:text="@string/units"
+                android:textColor="@color/black"
+                android:textSize="@dimen/settings_item_text_size" />
 
             <TextView
                 android:id="@+id/appVersion"

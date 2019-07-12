@@ -70,7 +70,7 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
         if (!swipeRefresh.isRefreshing) {
             showLoading()
         }
-        actions.accept(Action.GetLocation)
+        actions.accept(Action.GetWeights)
         swipeRefresh.isRefreshing = false
     }
 
@@ -121,6 +121,16 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
                 Timber.e(state.e)
                 initLocation(Location.ATLANTIC_CITY.name)
                 actions.accept(Action.GetCombinedData(location = location))
+            }
+            is State.GetWeightsSuccess -> {
+                viewModel.weights = state.weights
+                ScoreGenerator.weights = state.weights
+                actions.accept(Action.GetLocation)
+            }
+            is State.GetWeightsFailure -> {
+                Timber.e(state.error)
+                // TODO handle error
+                actions.accept(Action.GetLocation)
             }
         }.exhaustive
     }

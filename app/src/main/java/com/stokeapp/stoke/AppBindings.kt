@@ -7,6 +7,8 @@ import com.stokeapp.stoke.dashboard.DashboardActivity
 import com.stokeapp.stoke.location.LocationActivity
 import com.stokeapp.stoke.location.LocationBindings
 import com.stokeapp.stoke.settings.SettingsActivity
+import com.stokeapp.stoke.weights.WeightsActivity
+import com.stokeapp.stoke.weights.WeightsBindings
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -21,6 +23,9 @@ abstract class AppBindings {
 
     @ContributesAndroidInjector
     abstract fun settingsActivity(): SettingsActivity
+
+    @ContributesAndroidInjector(modules = [WeightsBindings::class])
+    abstract fun weightsActivity(): WeightsActivity
 
     @Binds
     abstract fun bindContext(app: Application): Context
