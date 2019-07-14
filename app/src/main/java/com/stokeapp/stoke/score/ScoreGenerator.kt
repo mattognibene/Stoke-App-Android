@@ -2,13 +2,15 @@ package com.stokeapp.stoke.score
 
 import com.stokeapp.stoke.domain.model.SurfReportModel
 import com.stokeapp.stoke.domain.model.WeatherDataModel
-import com.stokeapp.stoke.util.TemperatureConverter
+import com.stokeapp.stoke.domain.model.WeightsModel
+import com.stokeapp.stoke.util.UnitsConverter
 import timber.log.Timber
 
 object ScoreGenerator {
 
     var weatherData: WeatherDataModel? = null
     var surfReport: SurfReportModel? = null
+    var weights: WeightsModel = WeightsModel.default()
 
     fun generateScore(): Float {
         var weatherScore = 0f
@@ -29,8 +31,10 @@ object ScoreGenerator {
 
         Timber.d("Weather Score: $weatherScore")
         Timber.d("Surf Score: $surfScore")
+        Timber.d("Weather Weight: ${weights.weatherWeight}")
+        Timber.d("Surf Weight: ${weights.surfWeight}")
 
-        return weatherScore * .66f + surfScore * .33f
+        return weatherScore * weights.weatherWeight + surfScore * weights.surfWeight
     }
 
     private fun generateDescriptionScore(conditionCode: String): Float {
@@ -55,7 +59,7 @@ object ScoreGenerator {
     // https://openweathermap.org/weather-conditions
 
     private fun generateTemperatureScore(tempInKelvin: Float): Float {
-        val tempInF = TemperatureConverter.kelvinToFarenheit(tempInKelvin)
+        val tempInF = UnitsConverter.kelvinToFarenheit(tempInKelvin)
         return when {
             tempInF < 40f -> 2f
             tempInF < 55 -> 4f

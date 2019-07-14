@@ -39,7 +39,7 @@
             android:focusable="true"
             android:fontFamily="@font/din_medium"
             android:textColor="@color/white"
-            android:textSize="@dimen/headerTextSize"
+            android:textSize="@dimen/header_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/editLocation"
             app:layout_constraintTop_toTopOf="parent"
@@ -128,7 +128,7 @@
                         android:fontFamily="@font/din_medium"
                         android:text="@string/weather"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/headerTextSize" />
+                        android:textSize="@dimen/header_text_size" />
 
                     <TextView
                         android:id="@+id/mainDescriptionText"
@@ -181,7 +181,7 @@
                         android:fontFamily="@font/din_medium"
                         android:text="@string/surf_report"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/headerTextSize" />
+                        android:textSize="@dimen/header_text_size" />
 
                     <TextView
                         android:id="@+id/swellHeightText"
@@ -200,7 +200,7 @@
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                android:layout_width="64dp"
+                android:layout_width="@dimen/progress_bar_size"
                 android:layout_height="0dp"
                 android:layout_gravity="center"
                 android:layout_weight=".5"

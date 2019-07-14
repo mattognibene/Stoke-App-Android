@@ -6,7 +6,11 @@ import com.stokeapp.stoke.dashboard.weather.WeatherState
 import com.stokeapp.stoke.domain.interactor.invoke
 import com.stokeapp.stoke.domain.interactor.location.GetLocation
 import com.stokeapp.stoke.domain.interactor.surf.GetSurfReport
+import com.stokeapp.stoke.domain.interactor.units.GetUnits
 import com.stokeapp.stoke.domain.interactor.weather.GetWeatherData
+import com.stokeapp.stoke.domain.interactor.weights.GetWeights
+import com.stokeapp.stoke.domain.model.UnitsModel
+import com.stokeapp.stoke.domain.model.WeightsModel
 import com.stokeapp.stoke.util.exhaustive
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
@@ -16,8 +20,13 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val getWeatherDataUseCase: GetWeatherData,
     private val getSurfReportUseCase: GetSurfReport,
-    private val getLocationUseCase: GetLocation
+    private val getLocationUseCase: GetLocation,
+    private val getWeightsUseCase: GetWeights,
+    private val getUnitsUseCase: GetUnits
 ) : ViewModel() {
+
+    var weights: WeightsModel = WeightsModel.default()
+    var units: UnitsModel = UnitsModel.default()
 
     fun model(): ObservableTransformer<Action, State> {
         return ObservableTransformer { upstream ->
@@ -25,6 +34,8 @@ class DashboardViewModel @Inject constructor(
                 when (action) {
                     is Action.GetCombinedData -> getCombinedData(action)
                     Action.GetLocation -> getLocation()
+                    Action.GetWeights -> getWeights()
+                    Action.GetUnits -> getUnits()
                 }.exhaustive
             }
         }
@@ -59,7 +70,7 @@ class DashboardViewModel @Inject constructor(
                     } else if (weatherState is WeatherState.Failure) {
                         State.GetCombinedDataFailure(weatherState.error)
                     } else {
-                        State.GetCombinedDataFailure(Throwable("There was a network error"))
+                        State.GetCombinedDataFailure(Throwable("There was a network e"))
                         // This should never happen
                     }
                 })
@@ -71,5 +82,31 @@ class DashboardViewModel @Inject constructor(
                 .map <State> (State::GetLocationSuccess)
                 .onErrorReturn(State::GetLocationFailure)
                 .toObservable()
+    }
+
+    private fun getWeights(): Observable<State> {
+        return getWeightsUseCase.invoke()
+                .map <State> { model ->
+                    if (model.sum() < .1f) {
+                        State.GetWeightsSuccess(WeightsModel.default())
+                    } else {
+                        val adjustedSurf = model.surfWeight / model.sum()
+                        val adjustedWeather = model.weatherWeight / model.sum()
+                        State.GetWeightsSuccess(WeightsModel(
+                                surfWeight = adjustedSurf,
+                                weatherWeight = adjustedWeather))
+                    }
+                }
+                .onErrorReturn(State::GetWeightsFailure)
+                .toObservable()
+                .startWith(State.Loading)
+    }
+
+    private fun getUnits(): Observable<State> {
+        return getUnitsUseCase.invoke()
+                .map <State>(State::GetUnitsSuccess)
+                .onErrorReturn(State::GetUnitsFailure)
+                .toObservable()
+                .startWith(State.Loading)
     }
 }
