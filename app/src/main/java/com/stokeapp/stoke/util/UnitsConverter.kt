@@ -1,6 +1,6 @@
 package com.stokeapp.stoke.util
 
-object TemperatureConverter {
+object UnitsConverter {
 
     fun kelvinToCelsius(kelvin: Float): Float {
         return kelvin - 273.15f
@@ -12,5 +12,9 @@ object TemperatureConverter {
 
     fun celsiusToFarenheit(c: Float): Float {
         return c * (9.0f / 5.0f) + 32
+    }
+
+    fun metersPerSecondToMph(ms: Float): Float {
+        return ms * 2.23694f
     }
 }

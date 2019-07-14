@@ -13,6 +13,20 @@
     <string name="app_version">App Version: %1$s</string>
     <string name="units">Units</string>
     <string name="configure_weights">Configure Weights</string>
-    <string name="weights_instructions">Personalize how Stoke calulates the beach rating by adjusting what factors are most important to you.</string>
+    <string name="weights_instructions">Personalize how Stoke calculates the beach rating by adjusting what factors are most important to you.</string>
     <string name="save">Save</string>
+    <string name="units_instructions">Configure the units data is displayed as.</string>
+    <string name="configure_units">Configure Units</string>
+    <string name="temperature">Temperature</string>
+    <string name="wind_units">Wind Units</string>
+    <string name="temperature_units">Temperature Units</string>
+    <string-array name="temperature_units">
+        <item>Fahrenheit</item>
+        <item>Celsius</item>
+        <item>Kelvin</item>
+    </string-array>
+    <string-array name="wind_units">
+        <item>m/s</item>
+        <item>mph</item>
+    </string-array>
 </resources>

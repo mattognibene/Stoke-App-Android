@@ -9,7 +9,7 @@ data class WeightsModel(
     }
 
     companion object {
-        fun equalSplit(): WeightsModel {
+        fun default(): WeightsModel {
             return WeightsModel(.5f, .5f)
         }
     }

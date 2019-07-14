@@ -9,6 +9,7 @@ import com.stokeapp.stoke.location.LocationActivity
 import kotlinx.android.synthetic.main.activity_settings.*
 import android.content.pm.PackageManager
 import android.R.attr.versionName
+import com.stokeapp.stoke.units.UnitsActivity
 import com.stokeapp.stoke.weights.WeightsActivity
 import timber.log.Timber
 
@@ -23,6 +24,7 @@ class SettingsActivity : BaseActivity() {
     private fun initUi() {
         settingLocation.setOnClickListener { LocationActivity.launch(this) }
         settingsWeights.setOnClickListener { WeightsActivity.launch(this) }
+        settingUnits.setOnClickListener { UnitsActivity.launch(this) }
 
         toolbar.setNavigationOnClickListener { onBackPressed() }
         try {

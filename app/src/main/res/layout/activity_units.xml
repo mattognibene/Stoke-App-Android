@@ -7,70 +7,71 @@
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/unitsToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimaryDark"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_arrow_back_white"
-        app:title="@string/configure_weights"
+        app:title="@string/configure_units"
         app:titleTextAppearance="@style/ToolbarTheme"
         app:titleTextColor="@color/white" />
 
     <TextView
-        android:id="@+id/instructions"
+        android:id="@+id/unitsInstructions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/greyInstructions"
         android:padding="16dp"
-        android:text="@string/weights_instructions"
+        android:text="@string/units_instructions"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/unitsToolbar" />
 
     <TextView
-        android:id="@+id/surfReportText"
+        android:id="@+id/temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/temperature_units"
+        android:textColor="@color/black"
+        android:textSize="@dimen/header_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/unitsInstructions" />
+
+    <Spinner
+        android:id="@+id/temperatureSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="@dimen/units_spinner_top_margin"
+        android:layout_marginEnd="@dimen/units_spinner_end_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/temperature" />
+
+    <TextView
+        android:id="@+id/wind"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="@string/surf_report"
+        android:text="@string/wind_units"
         android:textColor="@color/black"
         android:textSize="@dimen/header_text_size"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/instructions" />
+        app:layout_constraintTop_toBottomOf="@id/temperatureSpinner" />
 
-    <androidx.appcompat.widget.AppCompatSeekBar
-        android:id="@+id/surfReportSlider"
+    <Spinner
+        android:id="@+id/windSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:max="100"
-        app:layout_constraintTop_toBottomOf="@id/surfReportText" />
-
-    <TextView
-        android:id="@+id/weatherText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/weather"
-        android:textColor="@color/black"
-        android:textSize="@dimen/header_text_size"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/surfReportSlider" />
-
-    <androidx.appcompat.widget.AppCompatSeekBar
-        android:id="@+id/weatherSlider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:max="100"
-        app:layout_constraintTop_toBottomOf="@id/weatherText" />
-
+        android:layout_marginTop="@dimen/units_spinner_top_margin"
+        android:layout_marginEnd="@dimen/units_spinner_end_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/wind" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSave"

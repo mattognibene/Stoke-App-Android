@@ -12,7 +12,7 @@ class GetWeights @Inject constructor(
     override fun execute(params: Unit): Single<WeightsModel> {
         return repository.getWeights()
                 .onErrorReturn {
-                    WeightsModel.equalSplit()
+                    WeightsModel.default()
                 }
     }
 }

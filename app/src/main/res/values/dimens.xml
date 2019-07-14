@@ -11,10 +11,12 @@
     <!-- See: https://material.io/design/layout/spacing-methods.html -->
     <dimen name="default_baseline">8dp</dimen>
     <dimen name="default_keyline">72dp</dimen>
-    <dimen name="headerTextSize">24sp</dimen>
+    <dimen name="header_text_size">24sp</dimen>
     <dimen name="settings_item_text_size">24sp</dimen>
     <dimen name="settings_item_vertical_padding">8dp</dimen>
     <dimen name="progress_bar_size">64dp</dimen>
+    <dimen name="units_spinner_top_margin">12dp</dimen>
+    <dimen name="units_spinner_end_margin">24dp</dimen>
 
     <!-- Define additional dimensions here -->
     

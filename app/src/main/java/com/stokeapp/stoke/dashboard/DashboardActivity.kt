@@ -11,11 +11,13 @@ import com.jakewharton.rxrelay2.PublishRelay
 import com.stokeapp.stoke.R
 import com.stokeapp.stoke.common.BaseActivity
 import com.stokeapp.stoke.domain.model.SurfReportModel
+import com.stokeapp.stoke.domain.model.TemperatureUnits
 import com.stokeapp.stoke.domain.model.WeatherDataModel
+import com.stokeapp.stoke.domain.model.WindUnits
 import com.stokeapp.stoke.location.LocationActivity
 import com.stokeapp.stoke.score.ScoreGenerator
 import com.stokeapp.stoke.settings.SettingsActivity
-import com.stokeapp.stoke.util.TemperatureConverter
+import com.stokeapp.stoke.util.UnitsConverter
 import com.stokeapp.stoke.util.exhaustive
 import com.uber.autodispose.android.lifecycle.scope
 import com.uber.autodispose.autoDisposable
@@ -70,7 +72,7 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
         if (!swipeRefresh.isRefreshing) {
             showLoading()
         }
-        actions.accept(Action.GetWeights)
+        actions.accept(Action.GetUnits)
         swipeRefresh.isRefreshing = false
     }
 
@@ -128,9 +130,18 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
                 actions.accept(Action.GetLocation)
             }
             is State.GetWeightsFailure -> {
-                Timber.e(state.error)
+                Timber.e(state.e)
                 // TODO handle error
                 actions.accept(Action.GetLocation)
+            }
+            is State.GetUnitsSuccess -> {
+                viewModel.units = state.units
+                actions.accept(Action.GetWeights)
+            }
+            is State.GetUnitsFailure -> {
+                Timber.e(state.e)
+                // TODO handle error
+                actions.accept(Action.GetWeights)
             }
         }.exhaustive
     }
@@ -160,19 +171,46 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
 
     // Weather
     private fun showHumidity(humidity: Float) {
-        val formattedHumidity = String.format("%.0f", humidity)
+        val formattedHumidity = String.format("%.0f", humidity) + "%"
         humidityText.text = getString(R.string.humidity_1_s, formattedHumidity)
     }
 
     private fun showTemperature(temp: Float) {
-        val fahrenheit = TemperatureConverter.kelvinToFarenheit(temp)
-        val formattedTemp = String.format("%.0f", fahrenheit)
+        var converted = 0f
+        var unit = ""
+        when (viewModel.units.temperatureUnits) {
+            TemperatureUnits.FAHRENHEIT -> {
+                converted = UnitsConverter.kelvinToFarenheit(temp)
+                unit = "° F"
+            }
+            TemperatureUnits.KELVIN -> {
+                converted = temp
+                unit = "K"
+            }
+            TemperatureUnits.CELSIUS -> {
+                converted = UnitsConverter.kelvinToCelsius(temp)
+                unit = "° C"
+            }
+        }.exhaustive
+        val formattedTemp = String.format("%.0f", converted) + unit
         temperatureText.text = getString(R.string.temperature_1s, formattedTemp)
-        // TODO format in units
     }
 
     private fun showWind(wind: Float) {
-        windText.text = getString(R.string.wind_speed, wind.toString(), "m/s") // TODO units
+        var converted = 0f
+        var unit = ""
+        when (viewModel.units.windUnits) {
+            WindUnits.METERS_PER_SECOND -> {
+                converted = wind
+                unit = "m/s"
+            }
+            WindUnits.MILES_PER_HOUR -> {
+                converted = UnitsConverter.metersPerSecondToMph(wind)
+                unit = "mph"
+            }
+        }.exhaustive
+        val formattedWind = String.format("%.0f", converted)
+        windText.text = getString(R.string.wind_speed, formattedWind, unit)
     }
 
     private fun showMainDescription(desc: String) {
