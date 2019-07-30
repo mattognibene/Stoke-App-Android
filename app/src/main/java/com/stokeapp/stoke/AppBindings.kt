@@ -7,6 +7,9 @@ import com.stokeapp.stoke.dashboard.DashboardActivity
 import com.stokeapp.stoke.location.LocationActivity
 import com.stokeapp.stoke.location.LocationBindings
 import com.stokeapp.stoke.settings.SettingsActivity
+import com.stokeapp.stoke.onboarding.OnboardingActivity
+import com.stokeapp.stoke.onboarding.OnboardingBindings
+import com.stokeapp.stoke.splash.SplashActivity
 import com.stokeapp.stoke.units.UnitsActivity
 import com.stokeapp.stoke.units.UnitsBindings
 import com.stokeapp.stoke.weights.WeightsActivity
@@ -32,6 +35,15 @@ abstract class AppBindings {
     @ContributesAndroidInjector(modules = [UnitsBindings::class])
     abstract fun unitsActivity(): UnitsActivity
 
+    @ContributesAndroidInjector
+    abstract fun splashActivity(): SplashActivity
+
+    @ContributesAndroidInjector(modules = [OnboardingBindings::class])
+    abstract fun onboardingActivity(): OnboardingActivity
+
     @Binds
     abstract fun bindContext(app: Application): Context
+
+    @Binds
+    abstract fun navigator(navigator: RegistrationNavigator): Navigator
 }

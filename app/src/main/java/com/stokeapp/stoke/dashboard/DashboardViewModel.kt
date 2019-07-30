@@ -70,7 +70,7 @@ class DashboardViewModel @Inject constructor(
                     } else if (weatherState is WeatherState.Failure) {
                         State.GetCombinedDataFailure(weatherState.error)
                     } else {
-                        State.GetCombinedDataFailure(Throwable("There was a network e"))
+                        State.GetCombinedDataFailure(Throwable("There was a network error"))
                         // This should never happen
                     }
                 })
