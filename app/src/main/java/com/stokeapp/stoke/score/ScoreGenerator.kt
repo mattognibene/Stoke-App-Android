@@ -68,11 +68,11 @@ object ScoreGenerator {
             tempInF < 70 -> 7f
             tempInF < 75f -> 8f
             tempInF < 80f -> 9f
-            tempInF < 85f -> 10f
-            tempInF < 90f -> 9f
-            tempInF < 100f -> 8f
-            tempInF < 105f -> 7f
-            tempInF < 110f -> 6f
+            tempInF < 95f -> 10f
+            tempInF < 105f -> 9f
+            tempInF < 110f -> 8f
+            tempInF < 115f -> 7f
+            tempInF < 120f -> 6f
             else -> 4f
         }
     }
@@ -84,7 +84,7 @@ object ScoreGenerator {
             humidity < 40 -> 9f
             humidity < 55f -> 10f
             humidity < 70 -> 6f
-            else -> 4f
+            else -> 3f
         }
     }
 

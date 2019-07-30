@@ -18,7 +18,7 @@
     <ScrollView
         android:id="@+id/settingsScrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -80,6 +80,23 @@
                 android:paddingBottom="@dimen/settings_item_vertical_padding"
                 android:text="@string/app_version"
                 android:textSize="@dimen/settings_item_text_size" />
+
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/hang_loose"
+            android:src="@drawable/ic_shaka" />
+    </LinearLayout>
 </LinearLayout>

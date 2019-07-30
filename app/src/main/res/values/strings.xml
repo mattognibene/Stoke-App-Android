@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">stoke</string>
+    <string name="app_name">Stoke</string>
     <string name="stoke_score">Stoke Score</string>
     <string name="temperature_1s">Temperature: %1$s</string>
     <string name="humidity_1_s">Humidity: %1$s</string>
@@ -20,6 +20,12 @@
     <string name="temperature">Temperature</string>
     <string name="wind_units">Wind Units</string>
     <string name="temperature_units">Temperature Units</string>
+    <string name="stoke">STOKE</string>
+    <string name="stoke_pitch">Live beach reports at your fingertips.</string>
+    <string name="how_stoke_works">How Stoke Works</string>
+    <string name="onboarding_two_description">Stoke aggregates marine and weather data to give you beach reports in real time.</string>
+    <string name="get_started">Get Started</string>
+    <string name="hang_loose">Hang Loose</string>
     <string-array name="temperature_units">
         <item>Fahrenheit</item>
         <item>Celsius</item>

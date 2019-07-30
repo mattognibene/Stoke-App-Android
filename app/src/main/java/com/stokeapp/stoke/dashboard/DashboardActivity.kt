@@ -246,4 +246,21 @@ class DashboardActivity : BaseActivity(), Consumer<State> {
                 maxBreakingHeight.toString(),
                 units)
     }
+
+    companion object {
+        fun launch(
+            activity: Activity
+        ) {
+            val intent = Intent(activity, DashboardActivity::class.java)
+            activity.startActivity(intent)
+        }
+        fun launchWithAnimation(
+            activity: Activity
+        ) {
+            val intent = Intent(activity, DashboardActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            activity.startActivity(intent)
+            activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+        }
+    }
 }

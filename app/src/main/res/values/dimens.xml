@@ -17,6 +17,7 @@
     <dimen name="progress_bar_size">64dp</dimen>
     <dimen name="units_spinner_top_margin">12dp</dimen>
     <dimen name="units_spinner_end_margin">24dp</dimen>
+    <dimen name="onboarding_desc_text_size">24sp</dimen>
 
     <!-- Define additional dimensions here -->
     
